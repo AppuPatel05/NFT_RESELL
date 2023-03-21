@@ -1,0 +1,48 @@
+import { MailerModule } from '@nestjs-modules/mailer';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmConfig } from 'src/config/typeorm.config';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { SendMailService } from '../shared/utility/send-email.utility';
+import { UserRepository } from './user-repository';
+import * as config from 'config';
+import { PassportModule } from '@nestjs/passport/dist';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from '../shared/strategy/jwt-strategy';
+import { OTPRepository } from './otp-repository';
+
+
+const mailConfig:any = config.get("mail");  
+
+
+@Module({
+  imports:[
+    PassportModule.register({defaultStrategy:'jwt'}),
+    JwtModule.register({
+      secret:"SecretKey51",
+      signOptions:{
+        expiresIn: 3600,
+      }
+    }),
+    MailerModule.forRoot({
+      transport:{
+        host: mailConfig.host,
+        port: mailConfig.port,
+        secure: true,
+        auth: {
+          user: mailConfig.user,
+          pass: mailConfig.pass
+        }
+      }
+    }),
+    TypeOrmModule.forFeature([UserRepository,OTPRepository]),
+    TypeOrmModule.forRoot(TypeOrmConfig),
+
+  ],
+  controllers: [AuthController],
+  providers: [AuthService,SendMailService,ConfigService,JwtStrategy,OTPRepository],
+  exports:[JwtStrategy,PassportModule]
+})
+export class AuthModule {}
