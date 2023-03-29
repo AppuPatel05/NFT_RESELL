@@ -11,7 +11,7 @@ import * as config from 'config';
 import { PassportModule } from '@nestjs/passport/dist';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../shared/strategy/jwt-strategy';
-import { OTPRepository } from './otp-repository';
+
 
 
 const mailConfig:any = config.get("mail");  
@@ -37,12 +37,12 @@ const mailConfig:any = config.get("mail");
         }
       }
     }),
-    TypeOrmModule.forFeature([UserRepository,OTPRepository]),
+    TypeOrmModule.forFeature([UserRepository]),
     TypeOrmModule.forRoot(TypeOrmConfig),
 
   ],
   controllers: [AuthController],
-  providers: [AuthService,SendMailService,ConfigService,JwtStrategy,OTPRepository],
+  providers: [AuthService,SendMailService,ConfigService,JwtStrategy],
   exports:[JwtStrategy,PassportModule]
 })
 export class AuthModule {}

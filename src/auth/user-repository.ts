@@ -52,7 +52,7 @@ export class UserRepository extends Repository<User>{
     }
    
     async metamaskAddressUpdate(emailORUsername:string,metamask_address:string){
-        
+        console.log(metamask_address);
         try {
             const res = await this.createQueryBuilder().update().set({metamask_address}).where("email= :emailORUsername OR username= :emailORUsername",{emailORUsername}).execute()
             if(res.affected === 1){ 
@@ -62,7 +62,13 @@ export class UserRepository extends Repository<User>{
             }
 
         } catch (error) {
-            throw new InternalServerErrorException("Metamask Address is not updated");
+        
+            if(error.code ==23505){
+                throw new ConflictException("Metamask account already in use");
+            }
+            else{
+                throw new InternalServerErrorException("Metamask Address is not updated");
+            }
         }
     }
 }

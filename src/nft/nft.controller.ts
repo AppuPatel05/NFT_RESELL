@@ -1,5 +1,7 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { NFTMintDto } from './dto/nft-mint-dto';
+import { NFTTransactionDTO } from './dto/nft-transaction-dto';
+import { UpdateOwnerDto } from './dto/update-owner-dto';
 import { NftService } from './nft.service';
 
 @Controller('nft')
@@ -15,5 +17,20 @@ export class NftController {
                 messge: "NFT stored succesfully"
             } 
         }
+    }
+
+    @Get("/:search_char")
+    async NFTSearch(@Param("search_char") search_char : string){
+       return await this.nftService.NFTSearch(search_char);
+    }
+
+    @Patch("/:update_owner")
+    async NFTOwnerUpdate(@Body() updatedOwnerDto : UpdateOwnerDto){
+        return await this.nftService.NFTOwnerUpdate(updatedOwnerDto);
+    }
+
+    @Post("/transaction")
+    async NFTTransaction(@Body() NFTTransactionDto : NFTTransactionDTO){
+        await this.nftService.NFTTransaction(NFTTransactionDto);
     }
 }
