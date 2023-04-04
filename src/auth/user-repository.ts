@@ -9,14 +9,13 @@ import { SignInCredentialDtos } from "./dto/signincredentail.dto";
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
 
-    async signUp(user:User): Promise<User>{
-    
+    async signUp(user:User){
         try{
             const userSaved = await user.save();
             return userSaved;
         }catch(err){
             if(err.code === '23505'){
-                throw new ConflictException("Username already exists");
+                throw new ConflictException("username or email already exists");
             }
         }
     }
@@ -52,7 +51,6 @@ export class UserRepository extends Repository<User>{
     }
    
     async metamaskAddressUpdate(emailORUsername:string,metamask_address:string){
-        console.log(metamask_address);
         try {
             const res = await this.createQueryBuilder().update().set({metamask_address}).where("email= :emailORUsername OR username= :emailORUsername",{emailORUsername}).execute()
             if(res.affected === 1){ 

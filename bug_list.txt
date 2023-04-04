@@ -1,0 +1,2 @@
+1. in database, username in capital and small latters are different. 
+2. 
