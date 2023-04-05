@@ -9,7 +9,6 @@ import { User } from '../shared/entity/user.entity';
 import { ForgotPasswordLinkDto } from './dto/forgot-password-link.dto';
 import { PasswordResetDto } from './dto/password-reset-dto.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { redirect } from 'react-router-dom';
 
 @Controller('auth')
 export class AuthController {
