@@ -41,7 +41,7 @@ export class User extends BaseEntity{
     metamask_address : string;
 
 
-    @OneToMany(()=>NFT,nft=>nft.user)
+    @OneToMany(()=>NFT,(nft)=>{nft.user,nft.current_owner})
     nft : NFT[];
 
     async validatePassword(password: string) : Promise<boolean>{

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { UUIDVersion } from 'class-validator';
 import { Transaction } from 'src/shared/entity/transaction-nft.entity';
 import { User } from 'src/shared/entity/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
@@ -13,7 +14,8 @@ export class NFTRepository extends Repository<NFT> {
 
   async NFTMint(nft: NFT) {
     try {
-        const resNft = await nft.save();
+      const resNft = await nft.save();
+      
         return resNft;
     } catch (error) {
       return error;
@@ -94,5 +96,27 @@ export class NFTRepository extends Repository<NFT> {
     } else {
       return false;
     }
+  }
+
+  async findNFTs() {
+    // const res = await this.createQueryBuilder('nft')
+    // .select()
+    // .execute();
+
+const res = await this
+    .createQueryBuilder("nft")
+    .leftJoinAndSelect("nft.current_owner", "user")
+    .getMany()
+
+    console.log(res);
+    
+
+
+    // const res = await this.find({
+    //    relations : {
+
+    //    }
+    // });
+    return res;
   }
 }

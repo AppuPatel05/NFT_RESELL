@@ -14,16 +14,17 @@ export class NFT extends BaseEntity{
     @Column()
     nft_description: string;
 
-    @Column({unique:true})
+    @Column()
     nft_price: number;
 
-    @Column()
+    @Column({unique:true})
     nft_image_link: string;
-
+    
+    
     @ManyToOne(()=>User,user=>user.nft)
     @JoinColumn({name:"userid"})
     user: User;
- 
+    
     @Column()
     category : NFTCategory;
 

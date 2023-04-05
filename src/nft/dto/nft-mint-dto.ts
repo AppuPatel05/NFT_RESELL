@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsNumber } from "class-validator";
 
 export class NFTMintDto{
 
@@ -22,6 +22,7 @@ export class NFTMintDto{
         example: `Jondoe123@`
     })
     @IsNotEmpty()
+    @IsNumber()
     nft_price : number;
     
     @ApiProperty({

@@ -24,7 +24,5 @@ export class NFTTransactionDTO{
     @IsNotEmpty()
     nft:string;
 
-    @IsNotEmpty()
-    nft_id:string;
 
 }

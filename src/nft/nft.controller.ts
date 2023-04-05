@@ -10,7 +10,6 @@ import { NftService } from './nft.service';
 export class NftController {
     constructor(private nftService: NftService){}
 
-
     // for storing nft in nft table
     @ApiTags("NFT")
     @Post("/nft-mint")
@@ -35,14 +34,14 @@ export class NftController {
     // Actual transaction
     @ApiTags("NFT")
     @Post("/transaction")
-    async NFTTransaction(@Body() NFTTransactionDto : NFTTransactionDTO){
+    async NFTTransaction(@Body(ValidationPipe) NFTTransactionDto : NFTTransactionDTO){
         return await this.nftService.NFTTransaction(NFTTransactionDto);
     }
 
     // NFT fetching as per category:
     @ApiTags("NFT")
     @Get("/nft")
-    async NFTCategoryData():Promise<object>{
+    async NFTCategoryData(){
         return await this.nftService.NFTCategoryData();
     }
 

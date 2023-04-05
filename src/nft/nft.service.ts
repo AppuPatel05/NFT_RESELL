@@ -43,12 +43,14 @@ export class NftService {
     nft.current_owner = userIdFromMetamaskAddress;
 
     const nftResponse : any = await this.nftRepository.NFTMint(nft);
+    // console.log(nftResponse);
+    
     if(nftResponse.nft_name){
         return {
             nft: {
               nft_name: nftResponse.nft_name,
               nft_description: nftResponse.nft_description,
-              nft_price: nftResponse.nft_name,
+              nft_price: nftResponse.nft_price,
               nft_image_link: nftResponse.nft_image_link,
               nft_category: nftResponse.category,
               user: nftResponse.user.userid,
@@ -94,6 +96,7 @@ export class NftService {
     const { senderUser, receiverUser,nft} = updatedOwnerDto;
     
     const current_user_id = receiverUser.userid;
+
     
     const NFTOwnerUpdate = await this.nftRepository.NFTOwnerUpdate(current_user_id, senderUser,nft);
     return NFTOwnerUpdate;
@@ -112,6 +115,10 @@ export class NftService {
     const NFTDetails = await this.nftRepository.findOne({
       nft_image_link: nft,
     });
+    if(!NFTDetails){
+      throw new NotFoundException("No NFT found!");
+    }
+    
 
     const senderUserId = senderUser.userid;
     const receiverUserId = receiverUser.userid;
@@ -155,14 +162,28 @@ export class NftService {
 
   }
 
-  // NFT fetching as per category:
-  async NFTCategoryData(): Promise<object> {
-    const nft = await this.nftRepository.find();
-    return {
-      nft,
-      status: 200,
-      message: "NFT fetched successfully"
-    };
+  // Fetching all the nfts:
+  async NFTCategoryData() {
+    const nftResponse = await this.nftRepository.findNFTs();
+    
+    const nft = nftResponse.map((nftData)=>{
+        return {
+          nft_name : nftData.nft_name,
+          nft_id:nftData.nft_id,
+          nft_price: nftData.nft_price,
+          nft_category: nftData.category,
+          nft_username:nftData.current_owner.username,
+          nft_image_link : nftData.nft_image_link
+        }
+    });
+
+    if(nft){
+      return {
+        nft,
+        status: 200,
+        message: "NFT fetched successfully"
+      };
+    }
   }
 
   // Return total no. of user,nft and transactions:   
@@ -181,7 +202,7 @@ export class NftService {
         'status-code': 200,
       },
     };
-  }
+  }   
 
 
   async getAllTransaction(){
@@ -198,6 +219,8 @@ export class NftService {
 
   async getAllUsers(){
     const allUser = await this.userRepository.find();
+    console.log(allUser);
+    
     if(allUser){
       return {
         users : allUser,
