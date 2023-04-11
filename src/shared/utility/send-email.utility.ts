@@ -17,6 +17,7 @@ export class SendMailService {
         subject,
         html,
       });
+      
       if (returnMailResponse.accepted != '') {
         return {
           status_code: 200,
@@ -28,6 +29,8 @@ export class SendMailService {
           message: 'Mail is failed to send because of network issue',
         };
       }
+      
+      
     } catch (error) {
       throw new InternalServerErrorException("Something went wrong at sending mail");
     }

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, ValidationPipe } from '@nestjs/common';
-import { Patch, Redirect, Req, Res } from '@nestjs/common/decorators';
+import { Patch, Query, Redirect, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
 import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { SignInCredentialDtos } from './dto/signincredentail.dto';
@@ -9,7 +9,13 @@ import { User } from '../shared/entity/user.entity';
 import { ForgotPasswordLinkDto } from './dto/forgot-password-link.dto';
 import { PasswordResetDto } from './dto/password-reset-dto.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { redirect } from 'react-router-dom';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import path = require('path');
+import { v4 as uuidv4 } from 'uuid';
+import { Observable, of } from 'rxjs';
+import { join } from 'path';
+import { UpdateUserProfileDTO } from './dto/update-user-profile.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +23,10 @@ export class AuthController {
     constructor(private authService: AuthService,private mailService: SendMailService){}
     
     @ApiTags("User")
-    @Post('/signup')
-    async signUp(@Body(ValidationPipe) authCredentialDto: AuthCredentialDto){
+    @Post('/signup')    
+    async signUp(@Body(ValidationPipe) authCredentialDto: AuthCredentialDto):Promise<Object>{
+        // console.log(({imagePath:profile.filename}));
+        // return {}
         const user =  await this.authService.signUp(authCredentialDto);
         if(user){
             const verifyMessageTitle = 'OC NFT Marketplace - Verification'
@@ -63,4 +71,34 @@ export class AuthController {
     async updateMetamaskAddress(@Body() updateMetamaskAddress:UpdateMetamaskAddressDto){
         return this.authService.metamaskAddressUpdate(updateMetamaskAddress);
     }
+
+    @ApiTags("User")
+    @Get("/user/get-user/:id")
+    async getUserFromMetamaskAddress(@Param('id') metamaskAddress : string): Promise<Object>{
+        return await this.authService.getUserFromMetamskAddress(metamaskAddress);
+    }
+
+    @ApiTags("User")
+    @Get("/user/get_image")
+    async getImageFunction(@Query() query:{image_link:string},@Res() res){
+        return (res.sendFile(join(process.cwd(),"uploads/profile_images/"+query.image_link)));
+    }
+
+    @ApiTags("User")
+    @Patch('/user/profile_image_setup') 
+    @UseInterceptors(FileInterceptor('profile',{
+        storage: diskStorage({
+            destination: './uploads/profile_images/',
+            filename: (req,file,cb) => {
+                const filename:string = path.parse(file.originalname).name.replace(/\s/g,'') + uuidv4();
+                const ext : string = path.parse(file.originalname).ext;
+                cb(null,`${filename}${ext}`)
+            }
+        })
+    }))
+    async profile_image_set(@UploadedFile() profile ,@Body() updatUserProfileDto : UpdateUserProfileDTO){
+        
+        return await this.authService.updateProfileImage(updatUserProfileDto,profile.filename)
+    }  
+
 }

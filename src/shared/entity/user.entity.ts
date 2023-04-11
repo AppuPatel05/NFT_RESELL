@@ -30,10 +30,10 @@ export class User extends BaseEntity{
     @Column()
     salt: string;
 
-    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)",name: "createdAt"})
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)",name: "created_at"})
     created_at: Date;
 
-    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" ,name:"updated_at"})
     updated_at: Date;
 
     
@@ -43,6 +43,13 @@ export class User extends BaseEntity{
 
     @OneToMany(()=>NFT,(nft)=>{nft.user,nft.current_owner})
     nft : NFT[];
+
+    @Column("character varying", {
+        name: "profile_pic",
+        nullable: true,
+        length: 255
+    })
+    profilePic: string | null;
 
     async validatePassword(password: string) : Promise<boolean>{
         const hash = await bcrypt.hash(password,this.salt);

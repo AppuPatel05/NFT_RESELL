@@ -63,6 +63,4 @@ export class NftController {
     async getAllUsers(){
        return await this.nftService.getAllUsers();
     }
-
-
 }

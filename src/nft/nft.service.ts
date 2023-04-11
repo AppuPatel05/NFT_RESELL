@@ -64,10 +64,18 @@ export class NftService {
           };
     }
     else{
+      if(nftResponse.code == 23505){
         return {
-            message: 'Someting went wrong while storing NFT',
+            message: 'NFT alreday minted',
             status: nftResponse.code,
         };
+      }
+      else{
+        return {
+          message: 'Something went wrong while storing nft',
+          status: nftResponse.code,
+      };
+      }
     }
   }
 
@@ -219,7 +227,7 @@ export class NftService {
 
   async getAllUsers(){
     const allUser = await this.userRepository.find();
-    console.log(allUser);
+    // console.log(allUser);
     
     if(allUser){
       return {
@@ -248,7 +256,6 @@ export class NftService {
     
     
     if(sender === undefined || receiver === undefined ){
-      
         throw new NotFoundException("user not found");
     }
     return { sender, receiver };

@@ -11,11 +11,11 @@ import * as config from 'config';
 import { PassportModule } from '@nestjs/passport/dist';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../shared/strategy/jwt-strategy';
-
+import { MulterModule } from '@nestjs/platform-express';
+require('dotenv').config();
 
 
 const mailConfig:any = config.get("mail");  
-
 
 @Module({
   imports:[
@@ -26,17 +26,27 @@ const mailConfig:any = config.get("mail");
         expiresIn: 3600,
       }
     }),
+  // MulterModule.register({dest:'./uploads'}),
     MailerModule.forRoot({
       transport:{
-        host: mailConfig.host,
-        port: mailConfig.port,
-        secure: true,
+        host: process.env.host,
+        port: process.env.port,
         auth: {
-          user: mailConfig.user,
-          pass: mailConfig.pass
+          user: process.env.user,
+          pass: process.env.pass
         }
       }
     }),
+    // MailerModule.forRoot({
+    //   transport:{
+    //     host: mailConfig.host,
+    //     port: mailConfig.port,
+    //     auth: {
+    //       user: mailConfig.user,
+    //       pass: mailConfig.pass
+    //     }
+    //   }
+    // }),
     TypeOrmModule.forFeature([UserRepository]),
     TypeOrmModule.forRoot(TypeOrmConfig),
 

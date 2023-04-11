@@ -14,8 +14,7 @@ export class NFTRepository extends Repository<NFT> {
 
   async NFTMint(nft: NFT) {
     try {
-      const resNft = await nft.save();
-      
+        const resNft = await nft.save();
         return resNft;
     } catch (error) {
       return error;
@@ -108,7 +107,7 @@ const res = await this
     .leftJoinAndSelect("nft.current_owner", "user")
     .getMany()
 
-    console.log(res);
+    // console.log(res);
     
 
 

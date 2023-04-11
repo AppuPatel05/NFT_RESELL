@@ -20,9 +20,10 @@ import * as bcrypt from 'bcrypt';
 import { UserRole } from '../shared/enums/user-role.enum';
 import { UpdateMetamaskAddressDto } from './dto/update-address-dto';
 import { JWTPayload } from 'src/shared/interfaces/jwt-payload.interface';
-import v1 from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { ForgotPasswordLinkDto } from './dto/forgot-password-link.dto';
 import { buffer } from 'stream/consumers';
+import { UpdateUserProfileDTO } from './dto/update-user-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -36,11 +37,16 @@ export class AuthService {
   async signUp(authCredentialDto: AuthCredentialDto){
     const { username, password,confirm_password ,email, is_verified, is_deleted } =
       authCredentialDto;
+      // console.log(authCredentialDto);
+      
+      
     if(password !== confirm_password){
       throw new ConflictException("confirm password doesn't match")
     }
     const salt = await bcrypt.genSalt();
     const user = new User();
+    user.userid = uuid();
+    
     user.username = username;
     user.password = await this.userRepository.hashPassword(password, salt);
     user.email = email;
@@ -56,12 +62,21 @@ export class AuthService {
     }
   }
 
-  async getUserById(id: number) {
-    const user = await this.userRepository.findOne(id);
+  async getUserFromMetamskAddress(metamaskAddress: string) : Promise<Object>{    
+    const user = await this.userRepository.findOne({metamask_address:metamaskAddress});
+    
     if (!user) {
       throw new NotFoundException('user not found!');
     }
-    return user;
+    return {
+      user: {
+          username: user.username,
+          email : user.email,
+          profile_pic: user.profilePic
+      },
+      message: "User fetched successfully",
+      status_code: 200
+  }
   }
 
   async verifyUser(id: number) {
@@ -267,6 +282,38 @@ export class AuthService {
       }
     }
   }
+
+  async updateProfileImage(updatUserProfileDto: UpdateUserProfileDTO,profile_pic_name:string){
+    const {metamask_address} = updatUserProfileDto;
+    
+    const user = await this.userRepository.findOne({metamask_address:metamask_address});
+    if(!user){
+      throw new NotFoundException("User not found");
+    }
+    const updateProfilePic = await this.userRepository
+              .createQueryBuilder('user')
+              .update()
+              .set({ profilePic:  profile_pic_name})
+              .where('metamask_address= :metamask_address', { metamask_address:metamask_address })
+              .execute();
+              
+    if(updateProfilePic.affected === 1){
+      return { 
+        status_code: 201,
+        message: "Profile pic updated successfully"
+      }
+    }
+    else{
+      return {
+        status_code:500,
+        message : "Profile pic does not updated"
+      }
+    }
+    
+  }
+
+
+
 
   generateOTP(length = 6): number {
     let otp = '';
