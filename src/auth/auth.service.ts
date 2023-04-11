@@ -15,7 +15,7 @@ import { SignInCredentialDtos } from './dto/signincredentail.dto';
 
 import { SendMailService } from '../shared/utility/send-email.utility';
 import { UserRepository } from './user-repository';
-import { User } from '../shared/entity/user.entity';
+import { Users } from '../shared/entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../shared/enums/user-role.enum';
 import { UpdateMetamaskAddressDto } from './dto/update-address-dto';
@@ -44,7 +44,7 @@ export class AuthService {
       throw new ConflictException("confirm password doesn't match")
     }
     const salt = await bcrypt.genSalt();
-    const user = new User();
+    const user = new Users();
     user.userid = uuid();
     
     user.username = username;

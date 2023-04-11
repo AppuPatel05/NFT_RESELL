@@ -2,14 +2,14 @@ import { ConflictException,InternalServerErrorException,UnauthorizedException } 
 import { EntityRepository, Repository } from "typeorm";
 import { AuthCredentialDto } from "./dto/auth-credential.dto";
 import { UserRole } from "../shared/enums/user-role.enum";
-import { User } from "../shared/entity/user.entity";
+import { Users } from "../shared/entity/user.entity";
 import * as bcrypt from 'bcrypt';
 import { SignInCredentialDtos } from "./dto/signincredentail.dto";
 
-@EntityRepository(User)
-export class UserRepository extends Repository<User>{
+@EntityRepository(Users)
+export class UserRepository extends Repository<Users>{
 
-    async signUp(user:User){
+    async signUp(user:Users){
         try{
             const userSaved = await user.save();
             return userSaved;

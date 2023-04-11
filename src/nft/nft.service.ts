@@ -6,7 +6,7 @@ import { NFT } from '../shared/entity/nft-mint.entity';
 import { NFTRepository } from './nft-repository';
 import { UserRepository } from 'src/auth/user-repository';
 import { NFTCategory } from 'src/shared/enums/nft-category.enum';
-import { User } from 'src/shared/entity/user.entity';
+import { Users } from 'src/shared/entity/user.entity';
 import { UpdateOwnerDto } from './dto/update-owner-dto';
 import { NFTTransactionDTO } from './dto/nft-transaction-dto';
 import { Transaction } from 'src/shared/entity/transaction-nft.entity';

@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import { UUIDVersion } from 'class-validator';
 import { Transaction } from 'src/shared/entity/transaction-nft.entity';
-import { User } from 'src/shared/entity/user.entity';
+import { Users } from 'src/shared/entity/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { NFT } from '../shared/entity/nft-mint.entity';
 import { UpdateOwnerDto } from './dto/update-owner-dto';
@@ -50,7 +50,7 @@ export class NFTRepository extends Repository<NFT> {
     }
   }
 
-  async NFTOwnerUpdate(current_owner: string, updated_owner: User,nft:string) {
+  async NFTOwnerUpdate(current_owner: string, updated_owner: Users,nft:string) {
     
     // if updatedUser === 0 then there is no nft belonging to current_owner;
 

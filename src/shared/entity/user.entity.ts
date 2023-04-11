@@ -5,7 +5,7 @@ import { NFT } from "./nft-mint.entity";
 
 @Entity()
 @Unique(['username'])
-export class User extends BaseEntity{
+export class Users extends BaseEntity{
     @PrimaryGeneratedColumn('uuid')
     userid: string;
 
