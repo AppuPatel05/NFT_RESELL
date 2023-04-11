@@ -1,23 +1,23 @@
 import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfig } from 'src/config/typeorm.config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { SendMailService } from '../shared/utility/send-email.utility';
 import { UserRepository } from './user-repository';
-import * as config from 'config';
+// import * as config from 'config';
 import { PassportModule } from '@nestjs/passport/dist';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../shared/strategy/jwt-strategy';
-import { MulterModule } from '@nestjs/platform-express';
+// import { MulterModule } from '@nestjs/platform-express';
 require('dotenv').config();
 
 
 
 
-const mailConfig:any = config.get("mail");  
+// const mailConfig:any = config.get("mail");  
 
 
 @Module({
