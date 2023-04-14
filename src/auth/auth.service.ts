@@ -3,6 +3,7 @@ import {
   GatewayTimeoutException,
   Injectable,
   InternalServerErrorException,
+  NotAcceptableException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -38,6 +39,7 @@ export class AuthService {
     const { username, password,confirm_password ,email, is_verified, is_deleted } =
       authCredentialDto;
       // console.log(authCredentialDto);
+
       
       
     if(password !== confirm_password){
@@ -51,10 +53,14 @@ export class AuthService {
     user.password = await this.userRepository.hashPassword(password, salt);
     user.email = email;
     user.role = UserRole.User;
-    user.is_verified = is_verified;
-    user.is_deleted = is_deleted;
+    user.is_verified = false;
+    user.is_deleted = false;
     user.salt = salt;
+ 
+    
     const userDataSave =  await this.userRepository.signUp(user);  
+    // console.log(userDataSave);
+    
     return {
       user: userDataSave,
       status_code : 201,
@@ -158,12 +164,25 @@ export class AuthService {
   }
 
   async forgotPassword(passwordResetDto: PasswordResetDto,id:string) {
+   
+    
+    
+    try {
+      
+    
     const { password, confirm_password } = passwordResetDto;
     let decodedUserId = Buffer.from(id, 'base64').toString();
 
     
+    if(decodedUserId.charAt(0) == '?'){ 
+      throw new NotFoundException("Please provide valid userid");
+    }
     
+
     const user = await this.userRepository.findOne({ userid:decodedUserId });
+    
+    
+    // console.log("not exec");
     
     if(!user || !user.is_verified){
         throw new UnauthorizedException('User does not exists');
@@ -194,7 +213,11 @@ export class AuthService {
     } catch (error) {
         throw new InternalServerErrorException('Something went wrong : Password is not updated');
     }
-
+  }
+ catch (error) {
+  throw new InternalServerErrorException("Something went wrong while resetting password")
+}
+}
     // otp code start: -----------------------------------------------------
 
     // const userOTPDetails = await this.otpRepository
@@ -257,7 +280,7 @@ export class AuthService {
     // }
 
     // otp code end: -----------------------------------------------------
-  }
+  
 
   async metamaskAddressUpdate(
     updateMetamaskAddress: UpdateMetamaskAddressDto,

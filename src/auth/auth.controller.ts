@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, NotAcceptableException, NotFoundException, Param, ParseIntPipe, ParseUUIDPipe, Post, ValidationPipe } from '@nestjs/common';
 import { Patch, Query, Redirect, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
 import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
@@ -15,6 +15,7 @@ import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { join } from 'path';
 import { UpdateUserProfileDTO } from './dto/update-user-profile.dto';
+import { NotFoundError } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +27,7 @@ export class AuthController {
     async signUp(@Body(ValidationPipe) authCredentialDto: AuthCredentialDto):Promise<Object>{
         // console.log(({imagePath:profile.filename}));
         // return {}
+        
         const user =  await this.authService.signUp(authCredentialDto);
         if(user){
             const verifyMessageTitle = 'OC NFT Marketplace - Verification'
@@ -80,6 +82,15 @@ export class AuthController {
     @ApiTags("User")
     @Get("/user/get_image")
     async getImageFunction(@Query() query:{image_link:string},@Res() res){
+        // console.log(query.image_link);
+        
+        if(!query.image_link){
+            throw new NotFoundException("Profile image not found");
+        }
+
+        if(query.image_link == null){
+            throw new NotFoundException("profile image does not exist");
+        }
         return (res.sendFile(join(process.cwd(),"uploads/profile_images/"+query.image_link)));
     }
 
@@ -96,7 +107,11 @@ export class AuthController {
         })
     }))
     async profile_image_set(@UploadedFile() profile ,@Body() updatUserProfileDto : UpdateUserProfileDTO){
-        
+
+        if(!profile){
+            throw new NotAcceptableException("Image not sent");
+        }
+        // console.log(profile);
         return await this.authService.updateProfileImage(updatUserProfileDto,profile.filename)
     }  
 

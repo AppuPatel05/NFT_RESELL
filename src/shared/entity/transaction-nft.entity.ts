@@ -13,7 +13,7 @@ export class Transaction extends BaseEntity{
     @Column()
     receiver: string;
 
-    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)",name: "createdAt"})
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)",name: "created_at"})
     created_at: Date;
 
     @Column({name:"amount"})

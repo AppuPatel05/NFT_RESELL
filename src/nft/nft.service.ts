@@ -10,6 +10,7 @@ import { Users } from 'src/shared/entity/user.entity';
 import { UpdateOwnerDto } from './dto/update-owner-dto';
 import { NFTTransactionDTO } from './dto/nft-transaction-dto';
 import { Transaction } from 'src/shared/entity/transaction-nft.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class NftService {
@@ -26,6 +27,7 @@ export class NftService {
     const { nft_name, nft_description, nft_price, nft_image_link, user } =
       nftMintDto;
     const nft = new NFT();
+    nft.nft_id = uuidv4();
     nft.nft_name = nft_name;
     nft.nft_description = nft_description;
     nft.nft_price = nft_price;
@@ -42,7 +44,9 @@ export class NftService {
     nft.mint_by = userIdFromMetamaskAddress;
     nft.current_owner = userIdFromMetamaskAddress;
 
+    // console.log(nft);
     const nftResponse : any = await this.nftRepository.NFTMint(nft);
+    
     // console.log(nftResponse);
     
     if(nftResponse.nft_name){
@@ -102,6 +106,7 @@ export class NftService {
     
     // note: senderUser = updated_owner || receiverUser = current_owner
     const { senderUser, receiverUser,nft} = updatedOwnerDto;
+    console.log(senderUser,receiverUser,nft);
     
     const current_user_id = receiverUser.userid;
 
@@ -144,6 +149,7 @@ export class NftService {
         const updateOwnerDto = {senderUser,receiverUser,nft}
         const updateOwnerResponse = await this.NFTOwnerUpdate(updateOwnerDto);
 
+        console.log(updateOwnerResponse);
         
         if(updateOwnerResponse){
             return {

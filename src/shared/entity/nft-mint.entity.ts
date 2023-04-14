@@ -22,20 +22,23 @@ export class NFT extends BaseEntity{
     
     
     @ManyToOne(()=>Users,user=>user.nft)
-    @JoinColumn({name:"userid"})
+    @JoinColumn({name:"user"})
+    @Column('uuid')
     user: Users;
     
     @Column()
     category : NFTCategory;
 
-    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)",name: "createdAt"})
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)",name: "created_at"})
     created_at: Date;
 
     @ManyToOne(()=>Users,user=>user.nft)
     @JoinColumn({name:"mint_by"})
+    @Column('uuid')
     mint_by: Users;
 
     @ManyToOne(()=>Users,user=>user.nft)
     @JoinColumn({name:"current_owner"})
+    @Column('uuid')
     current_owner: Users;
 }
