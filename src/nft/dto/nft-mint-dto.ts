@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber } from "class-validator";
+import { NFTCategory } from "src/shared/enums/nft-category.enum";
 
 export class NFTMintDto{
 
@@ -40,4 +41,10 @@ export class NFTMintDto{
     @IsNotEmpty()
     user:string;
 
+    @ApiProperty({
+        description: `Enter Category`,
+        example: `art`
+    })
+    @IsNotEmpty()
+    category:NFTCategory;
 }

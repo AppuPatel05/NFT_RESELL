@@ -14,7 +14,7 @@ export class NFT extends BaseEntity{
     @Column()
     nft_description: string;
 
-    @Column()
+    @Column('numeric')
     nft_price: number;
 
     @Column({unique:true})

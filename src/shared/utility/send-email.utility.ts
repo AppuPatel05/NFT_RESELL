@@ -32,7 +32,14 @@ export class SendMailService {
       
       
     } catch (error) {
-      throw new InternalServerErrorException("Something went wrong at sending mail");
+
+      return{
+        status_code : error.errno,
+        message: error.message
+      };
+
+
+      // throw new InternalServerErrorException("Something went wrong at sending mail");
     }
   }
 }

@@ -16,7 +16,7 @@ export class Transaction extends BaseEntity{
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)",name: "created_at"})
     created_at: Date;
 
-    @Column({name:"amount"})
+    @Column('numeric',{name:"amount"})
     amount:number;
 
     @Column("uuid")

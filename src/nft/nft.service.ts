@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UsePipes } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityRepository } from 'typeorm';
 import { NFTMintDto } from './dto/nft-mint-dto';
@@ -11,6 +11,7 @@ import { UpdateOwnerDto } from './dto/update-owner-dto';
 import { NFTTransactionDTO } from './dto/nft-transaction-dto';
 import { Transaction } from 'src/shared/entity/transaction-nft.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { NFTCategoryValidationPipe } from 'src/shared/pipes/nft-category.pipe';
 
 @Injectable()
 export class NftService {
@@ -23,16 +24,19 @@ export class NftService {
   ) {}
 
   // Storing NFTs in postgresql nft table:
+  
   async NFTMint(nftMintDto: NFTMintDto) {
-    const { nft_name, nft_description, nft_price, nft_image_link, user } =
+    const { nft_name, nft_description, nft_price, nft_image_link, user ,category} =
       nftMintDto;
+
+    // console.log(nftMintDto);
     const nft = new NFT();
     nft.nft_id = uuidv4();
     nft.nft_name = nft_name;
     nft.nft_description = nft_description;
     nft.nft_price = nft_price;
     nft.nft_image_link = nft_image_link;
-    nft.category = NFTCategory.art;
+    nft.category = category;
     const userIdFromMetamaskAddress = await this.userRepository.findOne({
       metamask_address: user,
     });
@@ -63,7 +67,7 @@ export class NftService {
               nft_id: nftResponse.nft_id,
               nft_created_at: nftResponse.created_at,
             },
-            status: 201,
+            status_code: 201,
             message: 'NFT stored succesfully',
           };
     }
@@ -71,13 +75,13 @@ export class NftService {
       if(nftResponse.code == 23505){
         return {
             message: 'NFT alreday minted',
-            status: nftResponse.code,
+            status_code: nftResponse.code,
         };
       }
       else{
         return {
           message: 'Something went wrong while storing nft',
-          status: nftResponse.code,
+          status_code: nftResponse.code,
       };
       }
     }
@@ -89,13 +93,13 @@ export class NftService {
     if(nftSearchResponse){
         return {
             nfts: nftSearchResponse,
-            status: 200,
+            status_code: 200,
             message: 'NFTs fetched successfully',
         };
     }
     else{
         return {
-            status: 404,
+            status_code: 404,
             message: 'No NFTs found!',
           };
     }
@@ -106,7 +110,7 @@ export class NftService {
     
     // note: senderUser = updated_owner || receiverUser = current_owner
     const { senderUser, receiverUser,nft} = updatedOwnerDto;
-    console.log(senderUser,receiverUser,nft);
+    // console.log(senderUser,receiverUser,nft);
     
     const current_user_id = receiverUser.userid;
 
@@ -149,7 +153,7 @@ export class NftService {
         const updateOwnerDto = {senderUser,receiverUser,nft}
         const updateOwnerResponse = await this.NFTOwnerUpdate(updateOwnerDto);
 
-        console.log(updateOwnerResponse);
+        // console.log(updateOwnerResponse);
         
         if(updateOwnerResponse){
             return {
@@ -187,14 +191,15 @@ export class NftService {
           nft_price: nftData.nft_price,
           nft_category: nftData.category,
           nft_username:nftData.current_owner.username,
-          nft_image_link : nftData.nft_image_link
+          nft_image_link : nftData.nft_image_link,
+          nft_description : nftData.nft_description
         }
     });
 
     if(nft){
       return {
         nft,
-        status: 200,
+        status_code: 200,
         message: "NFT fetched successfully"
       };
     }
@@ -212,9 +217,7 @@ export class NftService {
       nftCount,
       userCount,
       transactionCount,
-      status: {
-        'status-code': 200,
-      },
+      status_code: 200,
     };
   }   
 

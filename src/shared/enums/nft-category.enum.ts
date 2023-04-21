@@ -1,4 +1,5 @@
 export enum NFTCategory{
     art="Art",
-    gaming = "Gaming"
+    gaming = "Gaming",
+    meme = 'Memes'
 }

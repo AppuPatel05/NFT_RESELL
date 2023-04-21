@@ -17,7 +17,7 @@ require('dotenv').config();
 
 
 
-const mailConfig:any = config.get("mail");  
+// const mailConfig:any = config.get("mail");  
 
 
 @Module({
@@ -30,26 +30,26 @@ const mailConfig:any = config.get("mail");
       }
     }),
   // MulterModule.register({dest:'./uploads'}),
-    // MailerModule.forRoot({
-    //   transport:{
-    //     host: process.env.host,
-    //     port: process.env.port,
-    //     auth: {
-    //       user: process.env.user,
-    //       pass: process.env.pass
-    //     }
-    //   }
-    // }),
     MailerModule.forRoot({
       transport:{
-        host: mailConfig.host,
-        port: mailConfig.port,
+        host: process.env.host,
+        port: process.env.port,
         auth: {
-          user: mailConfig.user,
-          pass: mailConfig.pass
+          user: process.env.user,
+          pass: process.env.pass
         }
       }
     }),
+    // MailerModule.forRoot({
+    //   transport:{
+    //     host: mailConfig.host,
+    //     port: mailConfig.port,
+    //     auth: {
+    //       user: mailConfig.user,
+    //       pass: mailConfig.pass
+    //     }
+    //   }
+    // }),
     TypeOrmModule.forFeature([UserRepository]),
     TypeOrmModule.forRoot(TypeOrmConfig),
 

@@ -68,6 +68,12 @@ export class AuthService {
     }
   }
 
+  async failedMailHandler(user:Users){
+      const deletedUser = await this.userRepository.delete({userid:user.userid});
+      // console.log("deleted:",deletedUser);
+      return deletedUser;
+  }
+
   async getUserFromMetamskAddress(metamaskAddress: string) : Promise<Object>{    
     const user = await this.userRepository.findOne({metamask_address:metamaskAddress});
     
@@ -310,9 +316,11 @@ export class AuthService {
     const {metamask_address} = updatUserProfileDto;
     
     const user = await this.userRepository.findOne({metamask_address:metamask_address});
+
     if(!user){
       throw new NotFoundException("User not found");
     }
+
     const updateProfilePic = await this.userRepository
               .createQueryBuilder('user')
               .update()
@@ -320,6 +328,7 @@ export class AuthService {
               .where('metamask_address= :metamask_address', { metamask_address:metamask_address })
               .execute();
               
+  
     if(updateProfilePic.affected === 1){
       return { 
         status_code: 201,
@@ -332,11 +341,7 @@ export class AuthService {
         message : "Profile pic does not updated"
       }
     }
-    
   }
-
-
-
 
   generateOTP(length = 6): number {
     let otp = '';

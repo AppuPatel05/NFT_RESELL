@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpCode, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { NFT } from 'src/shared/entity/nft-mint.entity';
+import { NFTCategoryValidationPipe } from 'src/shared/pipes/nft-category.pipe';
 import { NFTMintDto } from './dto/nft-mint-dto';
 import { NFTTransactionDTO } from './dto/nft-transaction-dto';
 import { UpdateOwnerDto } from './dto/update-owner-dto';

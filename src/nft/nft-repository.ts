@@ -60,7 +60,7 @@ export class NFTRepository extends Repository<NFT> {
     
     // if updatedUser === 0 then there is no nft belonging to current_owner;
 
-    console.log(current_owner,updated_owner,nft);
+    // console.log(current_owner,updated_owner,nft);
     
     try {
       const updatedUser = await this.createQueryBuilder('nft')
@@ -70,8 +70,8 @@ export class NFTRepository extends Repository<NFT> {
         .andWhere('nft.nft_image_link= :nft_link',{nft_link: nft})
         .execute();
        
-        console.log(updatedUser);
-        
+        // console.log(updatedUser);
+      if(!updatedUser)  
       if (updatedUser.affected >= 1) {
         return updatedUser;
       } else {
