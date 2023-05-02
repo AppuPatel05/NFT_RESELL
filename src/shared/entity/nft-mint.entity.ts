@@ -5,7 +5,7 @@ import { Users } from "./user.entity";
 
 @Entity()
 export class NFT extends BaseEntity{
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('uuid',{name:'nft_id'})
     nft_id: string;
 
     @Column()
@@ -17,7 +17,7 @@ export class NFT extends BaseEntity{
     @Column('numeric')
     nft_price: number;
 
-    @Column({unique:true})
+    @Column()
     nft_image_link: string;
     
     
@@ -41,4 +41,10 @@ export class NFT extends BaseEntity{
     @JoinColumn({name:"current_owner"})
     @Column('uuid')
     current_owner: Users;
+
+    @Column({unique:true})
+    nft_json_link: string;
+
+    @Column()
+    nft_resell_count: number;
 }

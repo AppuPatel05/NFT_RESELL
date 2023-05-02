@@ -12,6 +12,7 @@ import { NFTTransactionDTO } from './dto/nft-transaction-dto';
 import { Transaction } from 'src/shared/entity/transaction-nft.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { NFTCategoryValidationPipe } from 'src/shared/pipes/nft-category.pipe';
+import { NFTUpdateResellDTO } from './dto/nft-resell-count-update-dto';
 
 @Injectable()
 export class NftService {
@@ -26,7 +27,7 @@ export class NftService {
   // Storing NFTs in postgresql nft table:
   
   async NFTMint(nftMintDto: NFTMintDto) {
-    const { nft_name, nft_description, nft_price, nft_image_link, user ,category} =
+    const { nft_name, nft_description, nft_price, nft_image_link, user ,category,nft_json_link,nft_resell_count} =
       nftMintDto;
 
     // console.log(nftMintDto);
@@ -37,6 +38,8 @@ export class NftService {
     nft.nft_price = nft_price;
     nft.nft_image_link = nft_image_link;
     nft.category = category;
+    nft.nft_json_link = nft_json_link;
+    nft.nft_resell_count = 0;
     const userIdFromMetamaskAddress = await this.userRepository.findOne({
       metamask_address: user,
     });
@@ -130,7 +133,7 @@ export class NftService {
      
     
     const NFTDetails = await this.nftRepository.findOne({
-      nft_image_link: nft,
+      nft_json_link: nft,
     });
     if(!NFTDetails){
       throw new NotFoundException("No NFT found!");
@@ -158,13 +161,13 @@ export class NftService {
         if(updateOwnerResponse){
             return {
                 trasaction : NFTTransactionResponse,
-                status: 201,
+                status_code: 201,
                 message: 'Transaction stored successfully',
             }
         }
         else{
            return {
-            status : 404,
+            status_code : 404,
             message : "Please provide valid nft"
            }
         }
@@ -172,7 +175,7 @@ export class NftService {
     }
     else{
         return {
-            status : 500,
+            status_code : 500,
             message: "Something went wrong while storing transaction"
         }
     }
@@ -227,7 +230,7 @@ export class NftService {
     if(allTransaction){
       return {
         transaction : allTransaction,
-        status : 200,
+        status_code : 200,
         message : "All transactions fetched successfully"
       }
     }
@@ -241,9 +244,54 @@ export class NftService {
     if(allUser){
       return {
         users : allUser,
-        status : 200,
+        status_code : 200,
         message : "All users fetched successfully"
       }
+    }
+  }
+
+  async getResellCount(nftJSONLink:string){
+    
+    
+    try {
+      const nftDetails = await this.nftRepository.findOne({nft_json_link:nftJSONLink});
+
+      return {
+        status_code : 200,
+        resell_count : nftDetails.nft_resell_count
+      }
+      
+    } catch (error) {
+      throw new NotFoundException("please provide valid nft_json_link");
+    }
+
+
+  }
+
+
+
+  async updateResellCount(nftResellDTO : NFTUpdateResellDTO){
+    try {
+      const {nft_json_link,updatedValue} = nftResellDTO;
+      const nftDetails = await this.nftRepository.findOne({nft_json_link});
+
+      const updatedResellCount = await this.nftRepository.update({nft_json_link:nft_json_link},{nft_resell_count:updatedValue});
+      console.log(updatedResellCount);
+      
+      if(updatedResellCount){
+        return {
+          status_code: 201,
+          message:"NFT Resell count successfully updated"
+        }
+      }
+      else{
+        return {
+          status_code: 500,
+          message: "Something went wrong while updating NFT Resell count"
+        }
+      }
+    } catch (error) {
+      throw new BadRequestException("Something went wrong");
     }
   }
 
@@ -272,4 +320,6 @@ export class NftService {
     throw new BadRequestException(error);       
 }
   }
+
+  
 }

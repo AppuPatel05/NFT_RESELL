@@ -67,7 +67,7 @@ export class NFTRepository extends Repository<NFT> {
         .update()
         .set({ current_owner: updated_owner })
         .where('nft.current_owner= :current_owner_id', { current_owner_id: current_owner })
-        .andWhere('nft.nft_image_link= :nft_link',{nft_link: nft})
+        .andWhere('nft.nft_json_link= :nft_link',{nft_link: nft})
         .execute();
        
         // console.log(updatedUser);

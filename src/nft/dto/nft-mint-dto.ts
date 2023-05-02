@@ -47,4 +47,19 @@ export class NFTMintDto{
     })
     @IsNotEmpty()
     category:NFTCategory;
+
+    @ApiProperty({
+        description: `Enter NFT JSONLink`,
+        example: `https://pinata.com/`
+    })
+    @IsNotEmpty()
+    nft_json_link : string;
+
+    @ApiProperty({
+        description: `Enter resell count`,
+        example: `0`
+    })
+    @IsNotEmpty()
+    nft_resell_count : number;
+
 }

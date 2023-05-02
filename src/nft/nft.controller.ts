@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, Param, Patch, Post, Query, ValidationPipe } from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { NFT } from 'src/shared/entity/nft-mint.entity';
 import { NFTCategoryValidationPipe } from 'src/shared/pipes/nft-category.pipe';
 import { NFTMintDto } from './dto/nft-mint-dto';
+import { NFTUpdateResellDTO } from './dto/nft-resell-count-update-dto';
 import { NFTTransactionDTO } from './dto/nft-transaction-dto';
 import { UpdateOwnerDto } from './dto/update-owner-dto';
 import { NftService } from './nft.service';
@@ -63,5 +64,17 @@ export class NftController {
     @Get("/user")
     async getAllUsers(){
        return await this.nftService.getAllUsers();
+    }
+
+    @ApiTags("NFT")
+    @Get("/resell_count/")
+    async getResellCount(@Query('nft_json_link') nft_json_link : string){
+       return await this.nftService.getResellCount(nft_json_link);
+    }
+
+    @ApiTags("NFT")
+    @Patch("/update_resell_count/")
+    async updateResellCount(@Body() nftResellDTO :NFTUpdateResellDTO ){
+       return await this.nftService.updateResellCount(nftResellDTO);
     }
 }
