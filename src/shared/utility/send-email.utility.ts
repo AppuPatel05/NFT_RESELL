@@ -20,12 +20,12 @@ export class SendMailService {
       
       if (returnMailResponse.accepted != '') {
         return {
-          status_code: 200,
+          statusCode: 200,
           message: 'Mail is sent to registered email address',
         };
       } else {
         return {
-          status_code: 503,
+          statusCode: 503,
           message: 'Mail is failed to send because of network issue',
         };
       }
@@ -34,7 +34,7 @@ export class SendMailService {
     } catch (error) {
 
       return{
-        status_code : error.errno,
+        statusCode : error.errno,
         message: error.message
       };
 

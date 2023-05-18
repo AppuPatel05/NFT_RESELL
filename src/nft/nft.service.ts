@@ -70,7 +70,7 @@ export class NftService {
               nft_id: nftResponse.nft_id,
               nft_created_at: nftResponse.created_at,
             },
-            status_code: 201,
+            statusCode: 201,
             message: 'NFT stored succesfully',
           };
     }
@@ -78,13 +78,13 @@ export class NftService {
       if(nftResponse.code == 23505){
         return {
             message: 'NFT alreday minted',
-            status_code: nftResponse.code,
+            statusCode: nftResponse.code,
         };
       }
       else{
         return {
           message: 'Something went wrong while storing nft',
-          status_code: nftResponse.code,
+          statusCode: nftResponse.code,
       };
       }
     }
@@ -96,13 +96,13 @@ export class NftService {
     if(nftSearchResponse){
         return {
             nfts: nftSearchResponse,
-            status_code: 200,
+            statusCode: 200,
             message: 'NFTs fetched successfully',
         };
     }
     else{
         return {
-            status_code: 404,
+            statusCode: 404,
             message: 'No NFTs found!',
           };
     }
@@ -113,30 +113,35 @@ export class NftService {
     
     // note: senderUser = updated_owner || receiverUser = current_owner
     const { senderUser, receiverUser,nft} = updatedOwnerDto;
-    // console.log(senderUser,receiverUser,nft);
     
     const current_user_id = receiverUser.userid;
 
     
     const NFTOwnerUpdate = await this.nftRepository.NFTOwnerUpdate(current_user_id, senderUser,nft);
+    
     return NFTOwnerUpdate;
   }
 
   // NFT transaction:
   async NFTTransaction(NFTTransactionDto: NFTTransactionDTO) {
     const { sender, receiver, nft } = NFTTransactionDto;
+    
     const obj1 = await this.findUser(sender, receiver);
     const senderUser = obj1.sender;
     const receiverUser = obj1.receiver;
 
     // console.log(senderUser,receiverUser);
      
-    
     const NFTDetails = await this.nftRepository.findOne({
-      nft_json_link: nft,
+      where:{
+        nft_json_link: nft,
+        current_owner: receiverUser.userid
+      }
     });
+
+    
     if(!NFTDetails){
-      throw new NotFoundException("No NFT found!");
+      throw new NotFoundException("You are not the owner of this NFT");
     }
     
 
@@ -145,43 +150,44 @@ export class NftService {
     const NFTPrice = NFTDetails.nft_price;
     const NFTId = NFTDetails.nft_id;
 
-    const NFTTransactionResponse =  await this.nftRepository.NFTTransaction(
-      senderUserId,
-      receiverUserId,
-      NFTPrice,
-      NFTId,
-    );
-
-    if(NFTTransactionResponse){
-        const updateOwnerDto = {senderUser,receiverUser,nft}
-        const updateOwnerResponse = await this.NFTOwnerUpdate(updateOwnerDto);
-
-        // console.log(updateOwnerResponse);
+      const NFTTransactionResponse =  await this.nftRepository.NFTTransaction(
+        senderUserId,
+        receiverUserId,
+        NFTPrice,
+        NFTId,
+        );
+  
         
-        if(updateOwnerResponse){
+        if(NFTTransactionResponse){
+          
+          const updateOwnerDto = {senderUser,receiverUser,nft}
+          const updateOwnerResponse = await this.NFTOwnerUpdate(updateOwnerDto);
+          
+
+          
+          if(updateOwnerResponse){
             return {
-                trasaction : NFTTransactionResponse,
-                status_code: 201,
-                message: 'Transaction stored successfully',
+              trasaction : NFTTransactionResponse,
+              statusCode: 201,
+              message: 'Transaction stored successfully',
             }
+          }
+          else{
+            return {
+              statusCode : 404,
+              message : "You are not the owner of this NFT"
+            }
+          }
+          
         }
         else{
-           return {
-            status_code : 404,
-            message : "Please provide valid nft"
-           }
-        }
-
-    }
-    else{
-        return {
-            status_code : 500,
+          return {
+            statusCode : 500,
             message: "Something went wrong while storing transaction"
+          }
         }
-    }
-
-
-  }
+        
+      }
 
   // Fetching all the nfts:
   async NFTCategoryData() {
@@ -202,7 +208,7 @@ export class NftService {
     if(nft){
       return {
         nft,
-        status_code: 200,
+        statusCode: 200,
         message: "NFT fetched successfully"
       };
     }
@@ -220,7 +226,7 @@ export class NftService {
       nftCount,
       userCount,
       transactionCount,
-      status_code: 200,
+      statusCode: 200,
     };
   }   
 
@@ -230,7 +236,7 @@ export class NftService {
     if(allTransaction){
       return {
         transaction : allTransaction,
-        status_code : 200,
+        statusCode : 200,
         message : "All transactions fetched successfully"
       }
     }
@@ -244,7 +250,7 @@ export class NftService {
     if(allUser){
       return {
         users : allUser,
-        status_code : 200,
+        statusCode : 200,
         message : "All users fetched successfully"
       }
     }
@@ -257,7 +263,7 @@ export class NftService {
       const nftDetails = await this.nftRepository.findOne({nft_json_link:nftJSONLink});
 
       return {
-        status_code : 200,
+        statusCode : 200,
         resell_count : nftDetails.nft_resell_count
       }
       
@@ -276,17 +282,17 @@ export class NftService {
       const nftDetails = await this.nftRepository.findOne({nft_json_link});
 
       const updatedResellCount = await this.nftRepository.update({nft_json_link:nft_json_link},{nft_resell_count:updatedValue});
-      console.log(updatedResellCount);
+      // console.log(updatedResellCount);
       
       if(updatedResellCount){
         return {
-          status_code: 201,
+          statusCode: 201,
           message:"NFT Resell count successfully updated"
         }
       }
       else{
         return {
-          status_code: 500,
+          statusCode: 500,
           message: "Something went wrong while updating NFT Resell count"
         }
       }

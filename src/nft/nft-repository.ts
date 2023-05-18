@@ -69,9 +69,11 @@ export class NFTRepository extends Repository<NFT> {
         .where('nft.current_owner= :current_owner_id', { current_owner_id: current_owner })
         .andWhere('nft.nft_json_link= :nft_link',{nft_link: nft})
         .execute();
+
+  
        
         // console.log(updatedUser);
-      if(!updatedUser)  
+      // if(!updatedUser) 
       if (updatedUser.affected >= 1) {
         return updatedUser;
       } else {
