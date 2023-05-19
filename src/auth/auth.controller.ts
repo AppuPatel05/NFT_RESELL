@@ -8,7 +8,7 @@ import { SendMailService } from '../shared/utility/send-email.utility';
 
 import { ForgotPasswordLinkDto } from './dto/forgot-password-link.dto';
 import { PasswordResetDto } from './dto/password-reset-dto.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import path = require('path');
@@ -23,6 +23,22 @@ var useragent = require('express-useragent');
 
 
 @Controller('auth')
+@ApiResponse({
+    status: 200,
+    description: 'Success',
+})
+@ApiResponse({
+    status: 201,
+    description: 'Created',
+})
+@ApiResponse({
+    status: 404,
+    description: 'Not Found',
+})
+@ApiResponse({
+    status: '5XX',
+    description: 'Unexpected Error',
+})
 export class AuthController {
 
     constructor(private authService: AuthService,private mailService: SendMailService,private readonly httpService: HttpService){}
@@ -70,19 +86,35 @@ export class AuthController {
                 return{url: 'http://192.168.1.25:3000/login'}
             }else{
                 return {url: 'https://ocnftmarketplace.page.link/qbvQ'}
-            }
-          
+            } 
         }
     }
 
     @ApiTags("User")
     @Post('/signin')
+    @ApiResponse({
+        status: 200,
+        description: 'Success',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Not Found',
+    })
+    @ApiResponse({
+        status: 201,
+        description: 'Created',
+    })
+    @ApiResponse({
+        status: '5XX',
+        description: 'Unexpected Error',
+    })
     async signIn(@Body(ValidationPipe) signInCredentialDto: SignInCredentialDtos){
         return this.authService.signIn(signInCredentialDto);
     }
 
     @ApiTags("User")
     @Post('/forgot-password-link')
+    
     async forgotPasswordMail(@Body(ValidationPipe) forgotPasswordLinkDto: ForgotPasswordLinkDto){ 
         return this.authService.forgotPasswordMail(forgotPasswordLinkDto);
     }
@@ -100,11 +132,24 @@ export class AuthController {
         return this.authService.metamaskAddressUpdate(updateMetamaskAddress);
     }
 
+    // @ApiTags("User")
+    // @Get("/user/get-user/:id")
+    // async getUserFromMetamaskAddress(@Param('id') metamaskAddress : string): Promise<Object>{
+    //     return await this.authService.getUserFromMetamskAddress(metamaskAddress);
+    // }
+
     @ApiTags("User")
-    // @Redirect()
-    @Get("/user/get-user/:id")
-    async getUserFromMetamaskAddress(@Param('id') metamaskAddress : string,@Request() req): Promise<Object>{
-        return await this.authService.getUserFromMetamskAddress(metamaskAddress);
+    @Get("/user/get-user/:token")
+    @ApiResponse({
+        status: 200,
+        description: 'Success',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Not found',
+    })
+    async getUser(@Param('token') emailORUsernameORMetamaskAddress : string): Promise<Object>{
+        return await this.authService.getUser(emailORUsernameORMetamaskAddress);
     }
 
     @ApiTags("User")
@@ -153,4 +198,11 @@ export class AuthController {
         return await this.authService.updateProfileImage(updatUserProfileDto,profile.filename)
     }  
 
+
+
+
+
 }
+
+
+

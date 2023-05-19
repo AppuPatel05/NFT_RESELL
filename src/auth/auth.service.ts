@@ -78,24 +78,24 @@ export class AuthService {
     return deletedUser;
   }
 
-  async getUserFromMetamskAddress(metamaskAddress: string): Promise<Object> {
-    const user = await this.userRepository.findOne({
-      metamask_address: metamaskAddress,
-    });
+  // async getUserFromMetamskAddress(metamaskAddress: string): Promise<Object> {
+  //   const user = await this.userRepository.findOne({
+  //     metamask_address: metamaskAddress,
+  //   });
 
-    if (!user) {
-      throw new NotFoundException('user not found!');
-    }
-    return {
-      user: {
-        username: user.username,
-        email: user.email,
-        profile_pic: user.profilePic,
-      },
-      message: 'User fetched successfully',
-      statusCode: 200,
-    };
-  }
+  //   if (!user) {
+  //     throw new NotFoundException('User does not exists');
+  //   }
+  //   return {
+  //     user: {
+  //       username: user.username,
+  //       email: user.email,
+  //       profile_pic: user.profilePic,
+  //     },
+  //     message: 'User fetched successfully',
+  //     statusCode: 200,
+  //   };
+  // }
 
   async verifyUser(id: string) {
     try {
@@ -364,8 +364,10 @@ export class AuthService {
       metamask_address: metamask_address,
     });
 
+
+
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('User does not exists');
     }
 
     try {
@@ -394,11 +396,24 @@ export class AuthService {
     }
   }
 
-  // generateOTP(length = 6): number {
-  //   let otp = '';
-  //   for (let i = 0; i < length; i++) {
-  //     otp += Math.floor(Math.random() * 10);
-  //   }
-  //   return parseInt(otp);
-  // }
+  async getUser(emailORUsernameORMetamaskAddress : string) {
+
+    try {
+      const user = await this.userRepository.findOne({where:[{username:emailORUsernameORMetamaskAddress},{email:emailORUsernameORMetamaskAddress},{metamask_address:emailORUsernameORMetamaskAddress}]});
+      if (!user) {
+        throw new NotFoundException('User does not exists');
+      }
+      return {
+        user: {
+          username: user.username,
+          email: user.email,
+          profile_pic: user.profilePic,
+        },
+        message: 'User fetched successfully',
+        statusCode: 200,
+      };
+    } catch (error) {
+      throw new HttpException(error.message,error.status);
+    }
+  }
 }

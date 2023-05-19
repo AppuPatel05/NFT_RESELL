@@ -45,7 +45,7 @@ export class UserRepository extends Repository<Users>{
             const user = await query.getOne();
             
             if(!user){
-                throw new UnauthorizedException('User not found');
+                throw new UnauthorizedException('User does not exists');
             }    
             if(!user.is_verified){
                 throw new UnauthorizedException('Please verify your email address');
@@ -73,6 +73,8 @@ export class UserRepository extends Repository<Users>{
     async metamaskAddressUpdate(emailORUsername:string,metamask_address:string){
         try {
             const res = await this.createQueryBuilder().update().set({metamask_address}).where("email= :emailORUsername OR username= :emailORUsername",{emailORUsername}).execute()
+        
+
             if(res.affected){ 
                 return true;
             }else{

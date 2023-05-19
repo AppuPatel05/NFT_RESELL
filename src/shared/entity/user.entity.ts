@@ -36,7 +36,7 @@ export class Users extends BaseEntity{
     @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" ,name:"updated_at"})
     updated_at: Date;
 
-    
+    // @Column('text', { array: true,default:null})
     @Column('text',{default:null,unique:true})
     metamask_address : string;
 

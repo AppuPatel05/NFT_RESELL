@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UsePipes } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityRepository } from 'typeorm';
+import { createQueryBuilder, EntityRepository } from 'typeorm';
 import { NFTMintDto } from './dto/nft-mint-dto';
 import { NFT } from '../shared/entity/nft-mint.entity';
 import { NFTRepository } from './nft-repository';
@@ -216,14 +216,16 @@ export class NftService {
 
   // Return total no. of user,nft and transactions:   
   async totalCount(): Promise<object> {
-    const nftCount = await this.nftRepository.count();
-
+    const nftCount = await this.nftRepository.createQueryBuilder("nft")
+    .select('DISTINCT ("nft_image_link")')
+    .getRawMany();
+    
     const userCount = await this.userRepository.count();
 
     const transactionCount = await Transaction.count();
 
     return {
-      nftCount,
+      nftCount : nftCount.length,
       userCount,
       transactionCount,
       statusCode: 200,
@@ -319,7 +321,7 @@ export class NftService {
     
     
     if(sender === undefined || receiver === undefined ){
-        throw new NotFoundException("user not found");
+        throw new NotFoundException("User does not exists");
     }
     return { sender, receiver };
 } catch (error) {

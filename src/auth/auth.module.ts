@@ -15,11 +15,7 @@ import { HttpModule } from '@nestjs/axios';
 // import { MulterModule } from '@nestjs/platform-express';
 require('dotenv').config();
 
-
-
-
 const mailConfig:any = config.get("mail");  
-
 
 @Module({
   imports:[HttpModule,

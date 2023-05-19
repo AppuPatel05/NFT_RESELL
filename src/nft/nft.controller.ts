@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, Param, Patch, Post, Query, ValidationPipe } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NFT } from 'src/shared/entity/nft-mint.entity';
 import { NFTCategoryValidationPipe } from 'src/shared/pipes/nft-category.pipe';
 import { NFTMintDto } from './dto/nft-mint-dto';
@@ -9,6 +9,22 @@ import { UpdateOwnerDto } from './dto/update-owner-dto';
 import { NftService } from './nft.service';
 
 @Controller('nft')
+@ApiResponse({
+   status: 200,
+   description: 'Success',
+})
+@ApiResponse({
+   status: 404,
+   description: 'Not Found',
+})
+@ApiResponse({
+   status: 201,
+   description: 'Created',
+})
+@ApiResponse({
+   status: '5XX',
+   description: 'Unexpected Error',
+})
 export class NftController {
     constructor(private nftService: NftService){}
 
