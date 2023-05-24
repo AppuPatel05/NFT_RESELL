@@ -358,13 +358,17 @@ export class AuthService {
     updatUserProfileDto: UpdateUserProfileDTO,
     profile_pic_name: string,
   ) {
-    const { metamask_address } = updatUserProfileDto;
+    const { metamask_address,usernameOrEmail } = updatUserProfileDto;
 
     const user = await this.userRepository.findOne({
+     where:[{
       metamask_address: metamask_address,
+     },{
+      username:usernameOrEmail
+     },{email:usernameOrEmail}] 
     });
 
-
+    console.log(user);
 
     if (!user) {
       throw new NotFoundException('User does not exists');
@@ -375,10 +379,15 @@ export class AuthService {
         .createQueryBuilder('user')
         .update()
         .set({ profilePic: profile_pic_name })
-        .where('metamask_address= :metamask_address', {
+        .where('metamask_address= :metamask_address', {    
           metamask_address: metamask_address,
         })
+        .orWhere('username= :username',{username:usernameOrEmail})
+        .orWhere('email= :email',{email:usernameOrEmail})
         .execute();
+
+        console.log("after:");
+        console.log(updateProfilePic);
   
       if (updateProfilePic.affected) {
         return {

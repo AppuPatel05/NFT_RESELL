@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UsePipes } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException, UsePipes } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createQueryBuilder, EntityRepository } from 'typeorm';
 import { NFTMintDto } from './dto/nft-mint-dto';
@@ -13,6 +13,7 @@ import { Transaction } from 'src/shared/entity/transaction-nft.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { NFTCategoryValidationPipe } from 'src/shared/pipes/nft-category.pipe';
 import { NFTUpdateResellDTO } from './dto/nft-resell-count-update-dto';
+import { NFTBalanceDTO } from './dto/NFTBalanceDTO-dto';
 
 @Injectable()
 export class NftService {
@@ -281,10 +282,17 @@ export class NftService {
   async updateResellCount(nftResellDTO : NFTUpdateResellDTO){
     try {
       const {nft_json_link,updatedValue} = nftResellDTO;
+      
       const nftDetails = await this.nftRepository.findOne({nft_json_link});
 
-      const updatedResellCount = await this.nftRepository.update({nft_json_link:nft_json_link},{nft_resell_count:updatedValue});
-      // console.log(updatedResellCount);
+      if(!nftDetails){
+        throw new NotFoundException("Please provide a valid nft json link");
+      }
+      
+      const updatedResellCount = await this.nftRepository.update(
+        {nft_json_link:nftDetails.nft_json_link},
+        { is_deleted:true,nft_json_link:nft_json_link,nft_resell_count:updatedValue}
+        );
       
       if(updatedResellCount){
         return {
@@ -299,7 +307,8 @@ export class NftService {
         }
       }
     } catch (error) {
-      throw new BadRequestException("Something went wrong");
+      
+      throw new HttpException(error.response.message,error.response.statusCode);
     }
   }
 
@@ -329,5 +338,36 @@ export class NftService {
 }
   }
 
-  
+  async updateBalance(nftBalanceDto : NFTBalanceDTO){
+    try {
+      const {nft_json_link,total_balance} = nftBalanceDto;
+      
+      const nftDetails = await this.nftRepository.findOne({nft_json_link});
+
+      if(!nftDetails){
+        throw new NotFoundException("Please provide a valid nft json link");
+      }
+      
+      const updateTotalBalance = await this.nftRepository.update(
+        {nft_json_link:nftDetails.nft_json_link},
+        { is_deleted:true,nft_json_link:nft_json_link,total_balance:total_balance}
+        );
+      
+      if(updateTotalBalance){
+        return {
+          statusCode: 201,
+          message:"Total balance updated successfully"
+        }
+      }
+      else{
+        return {
+          statusCode: 500,
+          message: "Something went wrong while updating Total Balance"
+        }
+      }
+    } catch (error) {
+      
+      throw new HttpException(error.response.message,error.response.statusCode);
+    }
+  }
 }

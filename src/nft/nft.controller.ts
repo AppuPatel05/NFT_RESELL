@@ -5,6 +5,7 @@ import { NFTCategoryValidationPipe } from 'src/shared/pipes/nft-category.pipe';
 import { NFTMintDto } from './dto/nft-mint-dto';
 import { NFTUpdateResellDTO } from './dto/nft-resell-count-update-dto';
 import { NFTTransactionDTO } from './dto/nft-transaction-dto';
+import { NFTBalanceDTO } from './dto/NFTBalanceDTO-dto';
 import { UpdateOwnerDto } from './dto/update-owner-dto';
 import { NftService } from './nft.service';
 
@@ -92,5 +93,11 @@ export class NftController {
     @Patch("/update_resell_count/")
     async updateResellCount(@Body() nftResellDTO :NFTUpdateResellDTO ){
        return await this.nftService.updateResellCount(nftResellDTO);
+    }
+
+    @ApiTags("NFT")
+    @Patch("/update_balance/")
+    async updateBalance(@Body() nftBalanceDto : NFTBalanceDTO ){
+       return await this.nftService.updateBalance(nftBalanceDto);
     }
 }

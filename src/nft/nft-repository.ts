@@ -115,12 +115,11 @@ export class NFTRepository extends Repository<NFT> {
 const res = await this
     .createQueryBuilder("nft")
     .leftJoinAndSelect("nft.current_owner", "user")
+    .distinctOn(['nft.nft_image_link'])
     .getMany()
 
     // console.log(res);
     
- 
-
     // const res = await this.find({
     //    relations : {
 

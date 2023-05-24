@@ -7,7 +7,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { SendMailService } from '../shared/utility/send-email.utility';
 import { UserRepository } from './user-repository';
-import * as config from 'config';
+// import * as config from 'config';
 import { PassportModule } from '@nestjs/passport/dist';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../shared/strategy/jwt-strategy';
@@ -15,7 +15,7 @@ import { HttpModule } from '@nestjs/axios';
 // import { MulterModule } from '@nestjs/platform-express';
 require('dotenv').config();
 
-const mailConfig:any = config.get("mail");  
+// const mailConfig:any = config.get("mail");  
 
 @Module({
   imports:[HttpModule,
@@ -27,26 +27,26 @@ const mailConfig:any = config.get("mail");
       }
     }),
   // MulterModule.register({dest:'./uploads'}),
-    // MailerModule.forRoot({
-    //   transport:{
-    //     host: process.env.host,
-    //     port: process.env.port,
-    //     auth: {
-    //       user: process.env.user,
-    //       pass: process.env.pass
-    //     }
-    //   }
-    // }),
     MailerModule.forRoot({
-      transport:{ 
-        host: mailConfig.host,
-        port: mailConfig.port,
+      transport:{
+        host: process.env.host,
+        port: process.env.port,
         auth: {
-          user: mailConfig.user,
-          pass: mailConfig.pass
+          user: process.env.user,
+          pass: process.env.pass
         }
       }
     }),
+    // MailerModule.forRoot({
+    //   transport:{ 
+    //     host: mailConfig.host,
+    //     port: mailConfig.port,
+    //     auth: {
+    //       user: mailConfig.user,
+    //       pass: mailConfig.pass
+    //     }
+    //   }
+    // }),
     TypeOrmModule.forFeature([UserRepository]),
     TypeOrmModule.forRoot(TypeOrmConfig),
 
