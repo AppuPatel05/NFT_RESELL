@@ -20,7 +20,7 @@ export class NFTMintDto{
     
     @ApiProperty({
         description: `Enter NFT Price`,
-        example: `Jondoe123@`
+        example: `0.02`
     })
     @IsNotEmpty()
     @IsNumber()
@@ -28,7 +28,7 @@ export class NFTMintDto{
     
     @ApiProperty({
         description: `Enter NFT ImageLink`,
-        example: `Jondoe123@`
+        example: `johndoe.ipfs`
     })
     @IsNotEmpty()
     nft_image_link : string;

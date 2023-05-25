@@ -48,8 +48,8 @@ export class NFT extends BaseEntity{
     @Column()
     nft_resell_count: number;
 
-    @Column({default:false})
-    is_deleted : boolean;
+    // @Column({default:false})
+    // is_deleted : boolean;
 
     @Column({default:null})
     total_balance : string;

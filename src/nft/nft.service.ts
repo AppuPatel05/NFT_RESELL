@@ -54,7 +54,7 @@ export class NftService {
 
     // console.log(nft);
     const nftResponse : any = await this.nftRepository.NFTMint(nft);
-    
+    // console.log(nftResponse);
     // console.log(nftResponse);
     
     if(nftResponse.nft_name){
@@ -291,7 +291,7 @@ export class NftService {
       
       const updatedResellCount = await this.nftRepository.update(
         {nft_json_link:nftDetails.nft_json_link},
-        { is_deleted:true,nft_json_link:nft_json_link,nft_resell_count:updatedValue}
+        {nft_json_link:nft_json_link,nft_resell_count:updatedValue}
         );
       
       if(updatedResellCount){
@@ -350,7 +350,7 @@ export class NftService {
       
       const updateTotalBalance = await this.nftRepository.update(
         {nft_json_link:nftDetails.nft_json_link},
-        { is_deleted:true,nft_json_link:nft_json_link,total_balance:total_balance}
+        {nft_json_link:nft_json_link,total_balance:total_balance}
         );
       
       if(updateTotalBalance){
